@@ -1,11 +1,14 @@
 package com.spoolpainter.app.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.spoolpainter.app.data.remote.spoolman.SpoolmanFilament
+import com.spoolpainter.app.domain.models.SpoolmanFilament
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,27 +38,30 @@ fun SpoolmanFilamentDropdown(
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 }
             },
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
-            enabled = !isLoading && filaments.isNotEmpty()
+            modifier = Modifier.menuAnchor().fillMaxWidth(),
+            enabled = !isLoading && filaments.isNotEmpty(),
+            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+            ),
+            shape = RoundedCornerShape(20.dp)
         )
         
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.clip(RoundedCornerShape(20.dp)),
+            tonalElevation = 8.dp
         ) {
-            filaments.forEach { filament ->
+            filaments.take(50).forEach { filament ->
                 DropdownMenuItem(
                     text = { 
-                        Column {
-                            Text("${filament.vendor?.name ?: "Unknown"} - ${filament.name}")
-                            Text(
-                                text = filament.material,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        Text("${filament.vendor?.name ?: "Unknown"} - ${filament.name}")
                     },
                     onClick = {
                         onFilamentSelected(filament)

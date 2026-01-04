@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.text.style.TextAlign
 import com.spoolpainter.app.data.local.OpenSpoolData
-import com.spoolpainter.app.data.remote.spoolman.SpoolmanFilament
+import com.spoolpainter.app.domain.models.SpoolmanFilament
 
 @Composable
 fun SpoolPainterScreen(
@@ -36,6 +36,7 @@ fun SpoolPainterScreen(
     onSnackbarDismiss: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     spoolmanFilaments: List<SpoolmanFilament> = emptyList(),
+    selectedSpoolmanFilament: SpoolmanFilament? = null,
     isLoadingSpools: Boolean = false,
     onSpoolmanFilamentSelected: (SpoolmanFilament) -> Unit = {}
 ) {
@@ -122,7 +123,7 @@ fun SpoolPainterScreen(
                     if (spoolmanFilaments.isNotEmpty()) {
                         SpoolmanFilamentDropdown(
                             filaments = spoolmanFilaments,
-                            selectedFilament = null,
+                            selectedFilament = selectedSpoolmanFilament,
                             onFilamentSelected = onSpoolmanFilamentSelected,
                             isLoading = isLoadingSpools,
                             modifier = Modifier.fillMaxWidth()

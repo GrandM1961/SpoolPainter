@@ -32,6 +32,7 @@ fun MainScreenContent(
             onSnackbarDismiss = { viewModel.dismissSnackbar() },
             onSettingsClick = { viewModel.showSettings() },
             spoolmanFilaments = viewModel.spoolmanFilaments,
+            selectedSpoolmanFilament = viewModel.selectedSpoolmanFilament,
             isLoadingSpools = viewModel.isLoadingSpools,
             onSpoolmanFilamentSelected = { filament ->
                 viewModel.handleFilamentSelection(filament)

@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.spoolpainter.nfc"
+        applicationId = "com.spoolpainter.app"
         minSdk = 35
         targetSdk = 36
         versionCode = 1

@@ -1,4 +1,4 @@
-package com.spoolpainter.app.data.remote.spoolman
+package com.spoolpainter.app.domain.models
 
 data class SpoolmanSpool(
     val id: Int? = null,

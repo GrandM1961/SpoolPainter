@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.spoolpainter.app.data.local.OpenSpoolData
-import com.spoolpainter.app.data.remote.spoolman.SpoolmanFilament
+import com.spoolpainter.app.domain.models.SpoolmanFilament
 import com.spoolpainter.app.data.remote.spoolman.SpoolmanService
 
 class MainViewModel : ViewModel() {
@@ -27,6 +27,8 @@ class MainViewModel : ViewModel() {
     var spoolmanUrl by mutableStateOf("")
         private set
     var spoolmanFilaments by mutableStateOf<List<SpoolmanFilament>>(emptyList())
+        private set
+    var selectedSpoolmanFilament by mutableStateOf<SpoolmanFilament?>(null)
         private set
     var isLoadingSpools by mutableStateOf(false)
         private set
@@ -78,6 +80,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun handleFilamentSelection(filament: SpoolmanFilament) {
+        selectedSpoolmanFilament = filament
         val openSpoolData = createOpenSpoolDataFromFilament(filament)
         readData = openSpoolData
         dataVersion++
