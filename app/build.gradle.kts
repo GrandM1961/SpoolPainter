@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.spoolpainter.nfc"
+    namespace = "com.spoolpainter.app"
     compileSdk {
         version = release(36)
     }

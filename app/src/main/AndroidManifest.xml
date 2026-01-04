@@ -19,7 +19,7 @@
         android:theme="@style/Theme.SpoolPainter"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="com.spoolpainter.nfc.MainActivity"
+            android:name="com.spoolpainter.app.ui.activity.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.SpoolPainter.Splash">
