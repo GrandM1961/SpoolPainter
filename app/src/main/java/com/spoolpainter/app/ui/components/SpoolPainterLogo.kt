@@ -33,7 +33,18 @@ fun SpoolPainterLogo(
             modifier = Modifier
                 .height(125.dp)
                 .size(200.dp),
-            colorFilter = ColorFilter.tint(color, BlendMode.Modulate),
+            colorFilter = if (color == Color.Black) {
+                ColorFilter.colorMatrix(
+                    colorMatrix = androidx.compose.ui.graphics.ColorMatrix().apply {
+                        setToScale(-1f, -1f, -1f, 1f)
+                        set(0, 4, 255f)
+                        set(1, 4, 255f)
+                        set(2, 4, 255f)
+                    }
+                )
+            } else {
+                ColorFilter.tint(color, BlendMode.Modulate)
+            },
             contentScale = ContentScale.Fit
         )
         
