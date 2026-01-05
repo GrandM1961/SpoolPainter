@@ -15,7 +15,7 @@ import com.spoolpainter.app.data.local.MaterialDatabase
 fun MaterialSelector(
     selectedMaterial: String,
     customMaterial: String,
-    onMaterialSelected: (String, String, String) -> Unit,
+    onMaterialSelected: (String, String, String, String, String) -> Unit,
     onCustomMaterialChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -60,7 +60,7 @@ fun MaterialSelector(
                         text = { Text(material.name) },
                         onClick = {
                             expanded = false
-                            onMaterialSelected(material.name, material.defaultMinTemp.toString(), material.defaultMaxTemp.toString())
+                            onMaterialSelected(material.name, material.defaultMinTemp.toString(), material.defaultMaxTemp.toString(), material.defaultBedMinTemp.toString(), material.defaultBedMaxTemp.toString())
                         }
                     )
                 }

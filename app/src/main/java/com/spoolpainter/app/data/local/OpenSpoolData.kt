@@ -63,13 +63,16 @@ data class OpenSpoolData(
     }
     
     fun toSpool(): FilamentSpool {
+        val material = MaterialDatabase.getMaterial(type)
         return FilamentSpool(
             material = type,
             variant = if (subtype != "Basic") subtype else "",
             brand = brand,
             colorHex = colorHex,
-            minTemp = minTemp.toIntOrNull() ?: 200,
-            maxTemp = maxTemp.toIntOrNull() ?: 220
+            minTemp = minTemp.toIntOrNull() ?: material?.defaultMinTemp,
+            maxTemp = maxTemp.toIntOrNull() ?: material?.defaultMaxTemp,
+            bedMinTemp = bedMinTemp?.toIntOrNull() ?: material?.defaultBedMinTemp,
+            bedMaxTemp = bedMaxTemp?.toIntOrNull() ?: material?.defaultBedMaxTemp
         )
     }
 }

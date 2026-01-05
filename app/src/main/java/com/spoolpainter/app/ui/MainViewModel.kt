@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import com.spoolpainter.app.data.local.OpenSpoolData
 import com.spoolpainter.app.domain.models.SpoolmanFilament
 import com.spoolpainter.app.data.remote.spoolman.SpoolmanService
+import com.spoolpainter.app.data.local.MaterialDatabase
 
 class MainViewModel : ViewModel() {
     
@@ -96,14 +97,46 @@ class MainViewModel : ViewModel() {
     }
 
     private fun createOpenSpoolDataFromFilament(filament: SpoolmanFilament): OpenSpoolData {
+        val material = MaterialDatabase.getMaterial(filament.material)
+        val spoolmanTemp = filament.settings_extruder_temp
+        val spoolmanBedTemp = filament.settings_bed_temp
+        
+        val (minTemp, maxTemp) = if (spoolmanTemp != null && material != null) {
+            if (spoolmanTemp in material.defaultMinTemp..material.defaultMaxTemp) {
+                // Use default range if Spoolman temp falls within it
+                material.defaultMinTemp.toString() to material.defaultMaxTemp.toString()
+            } else {
+                // Use Spoolman temp +20 if outside default range
+                spoolmanTemp.toString() to (spoolmanTemp + 20).toString()
+            }
+        } else {
+            // Fallback to material defaults or generic range
+            material?.let { it.defaultMinTemp.toString() to it.defaultMaxTemp.toString() } 
+                ?: ("200" to "220")
+        }
+        
+        val (bedMinTemp, bedMaxTemp) = if (spoolmanBedTemp != null && material != null) {
+            if (spoolmanBedTemp in material.defaultBedMinTemp..material.defaultBedMaxTemp) {
+                // Use default range if Spoolman bed temp falls within it
+                material.defaultBedMinTemp.toString() to material.defaultBedMaxTemp.toString()
+            } else {
+                // Use Spoolman bed temp +10 if outside default range
+                spoolmanBedTemp.toString() to (spoolmanBedTemp + 10).toString()
+            }
+        } else {
+            // Fallback to material defaults or generic range
+            material?.let { it.defaultBedMinTemp.toString() to it.defaultBedMaxTemp.toString() } 
+                ?: ("50" to "70")
+        }
+        
         return OpenSpoolData(
             type = filament.material,
             colorHex = filament.color_hex.removePrefix("#"),
             brand = filament.vendor?.name ?: "Unknown",
-            minTemp = filament.settings_extruder_temp?.toString() ?: "200",
-            maxTemp = (filament.settings_extruder_temp?.plus(20))?.toString() ?: "220",
-            bedMinTemp = filament.settings_bed_temp?.toString(),
-            bedMaxTemp = filament.settings_bed_temp?.toString()
+            minTemp = minTemp,
+            maxTemp = maxTemp,
+            bedMinTemp = bedMinTemp,
+            bedMaxTemp = bedMaxTemp
         )
     }
 

@@ -16,7 +16,7 @@ fun FilamentForm(
     colorHex: String,
     brand: String,
     customBrand: String,
-    onFilamentTypeChange: (String, String, String) -> Unit,
+    onFilamentTypeChange: (String, String, String, String, String) -> Unit,
     onCustomMaterialChange: (String) -> Unit,
     onVariantChange: (String) -> Unit,
     onColorChange: (String) -> Unit,

@@ -17,7 +17,7 @@ import com.spoolpainter.app.ui.components.SpoolPainterLogo
 import com.spoolpainter.app.ui.components.SpoolmanFilamentDropdown
 import com.spoolpainter.app.ui.components.FilamentForm
 import com.spoolpainter.app.ui.components.CustomSnackbar
-import com.spoolpainter.app.ui.components.TemperatureCard
+import com.spoolpainter.app.data.local.MaterialDatabase
 import com.spoolpainter.app.ui.components.TemperatureControl
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -40,16 +40,17 @@ fun SpoolPainterScreen(
     isLoadingSpools: Boolean = false,
     onSpoolmanFilamentSelected: (SpoolmanFilament) -> Unit = {}
 ) {
+    val defaultMaterial = MaterialDatabase.getMaterial("PLA")!!
     var filamentType by remember { mutableStateOf("PLA") }
     var customMaterial by remember { mutableStateOf("") }
     var variant by remember { mutableStateOf("") }
     var colorHex by remember { mutableStateOf("FFFFFF") }
     var brand by remember { mutableStateOf("Generic") }
     var customBrand by remember { mutableStateOf("") }
-    var minTemp by remember { mutableStateOf("200") }
-    var maxTemp by remember { mutableStateOf("220") }
-    var bedMinTemp by remember { mutableStateOf("60") }
-    var bedMaxTemp by remember { mutableStateOf("70") }
+    var minTemp by remember { mutableStateOf(defaultMaterial.defaultMinTemp.toString()) }
+    var maxTemp by remember { mutableStateOf(defaultMaterial.defaultMaxTemp.toString()) }
+    var bedMinTemp by remember { mutableStateOf(defaultMaterial.defaultBedMinTemp.toString()) }
+    var bedMaxTemp by remember { mutableStateOf(defaultMaterial.defaultBedMaxTemp.toString()) }
 
     // Update UI when readData changes
     LaunchedEffect(readData, dataVersion) {
@@ -61,6 +62,8 @@ fun SpoolPainterScreen(
             brand = spool.brand
             minTemp = spool.minTemp.toString()
             maxTemp = spool.maxTemp.toString()
+            bedMinTemp = spool.bedMinTemp?.toString() ?: bedMinTemp
+            bedMaxTemp = spool.bedMaxTemp?.toString() ?: bedMaxTemp
         }
     }
 
@@ -164,10 +167,12 @@ fun SpoolPainterScreen(
                         colorHex = colorHex,
                         brand = brand,
                         customBrand = customBrand,
-                        onFilamentTypeChange = { material, min, max ->
+                        onFilamentTypeChange = { material, min, max, bedMin, bedMax ->
                             filamentType = material
                             minTemp = min
                             maxTemp = max
+                            bedMinTemp = bedMin
+                            bedMaxTemp = bedMax
                         },
                         onCustomMaterialChange = { customMaterial = it },
                         onVariantChange = { variant = it },
@@ -179,16 +184,18 @@ fun SpoolPainterScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     // Temperature section - reusing TemperatureCard content
-                    TemperatureSection(
-                        nozzleMin = minTemp,
-                        nozzleMax = maxTemp,
-                        bedMin = bedMinTemp,
-                        bedMax = bedMaxTemp,
-                        onNozzleMinChange = { minTemp = it },
-                        onNozzleMaxChange = { maxTemp = it },
-                        onBedMinChange = { bedMinTemp = it },
-                        onBedMaxChange = { bedMaxTemp = it }
-                    )
+                    key(filamentType) {
+                        TemperatureSection(
+                            nozzleMin = minTemp,
+                            nozzleMax = maxTemp,
+                            bedMin = bedMinTemp,
+                            bedMax = bedMaxTemp,
+                            onNozzleMinChange = { minTemp = it },
+                            onNozzleMaxChange = { maxTemp = it },
+                            onBedMinChange = { bedMinTemp = it },
+                            onBedMaxChange = { bedMaxTemp = it }
+                        )
+                    }
                 }
             }
 
