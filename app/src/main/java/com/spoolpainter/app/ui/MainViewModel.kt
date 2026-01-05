@@ -54,6 +54,13 @@ class MainViewModel : ViewModel() {
                 readData = openSpoolData
                 currentSpoolId = openSpoolData.spoolId
                 Log.d("MainViewModel", "Set currentSpoolId to: $currentSpoolId")
+                
+                // Clear selected spool if currentSpoolId is null
+                if (currentSpoolId == null) {
+                    selectedSpool = null
+                    Log.d("MainViewModel", "Cleared selectedSpool because currentSpoolId is null")
+                }
+                
                 dataVersion++
                 Log.d("MainViewModel", "Updated readData and dataVersion to: $dataVersion")
             } ?: Log.e("MainViewModel", "Failed to parse OpenSpoolData from JSON")
@@ -88,10 +95,14 @@ class MainViewModel : ViewModel() {
         showSettings = false
     }
 
-    fun handleFilamentSelection(filament: FilamentSpool) {
+    fun handleFilamentSelection(filament: FilamentSpool?) {
         selectedSpool = filament
-        val openSpoolData = OpenSpoolData.toOpenSpoolData(filament)
-        readData = openSpoolData
+        if (filament != null) {
+            val openSpoolData = OpenSpoolData.toOpenSpoolData(filament)
+            readData = openSpoolData
+        } else {
+            readData = null
+        }
         dataVersion++
     }
 

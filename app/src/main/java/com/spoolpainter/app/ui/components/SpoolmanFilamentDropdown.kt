@@ -16,7 +16,7 @@ import com.spoolpainter.app.data.remote.spoolman.SpoolmanService
 fun SpoolmanFilamentDropdown(
     filaments: List<FilamentSpool>,
     selectedFilament: FilamentSpool?,
-    onFilamentSelected: (FilamentSpool) -> Unit,
+    onFilamentSelected: (FilamentSpool?) -> Unit,
     spoolmanUrl: String,
     currentSpoolId: String?,
     isLoading: Boolean = false,
@@ -24,26 +24,41 @@ fun SpoolmanFilamentDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
     
-    LaunchedEffect(currentSpoolId, spoolmanUrl) {
+    // Clear selection immediately when currentSpoolId is null
+    LaunchedEffect(currentSpoolId) {
+        if (currentSpoolId == null) {
+            android.util.Log.d("SpoolmanDropdown", "currentSpoolId is null, clearing selection immediately")
+            onFilamentSelected(null)
+        }
+    }
+    
+    LaunchedEffect(currentSpoolId, spoolmanUrl, filaments.size) {
         android.util.Log.d("SpoolmanDropdown", "LaunchedEffect triggered - spoolId: $currentSpoolId, url: $spoolmanUrl")
-        currentSpoolId?.let { spoolId ->
-            if (spoolmanUrl.isNotEmpty()) {
-                android.util.Log.d("SpoolmanDropdown", "Attempting to find filament for spool ID: $spoolId")
-                try {
-                    val service = SpoolmanService(spoolmanUrl)
-                    val filament = service.findFilamentBySpoolId(spoolId)
-                    android.util.Log.d("SpoolmanDropdown", "Found filament: $filament")
-                    filament?.let { 
-                        android.util.Log.d("SpoolmanDropdown", "Calling onFilamentSelected with: ${it.spoolmanName}")
-                        onFilamentSelected(it)
-                    } ?: android.util.Log.w("SpoolmanDropdown", "No filament found for spool ID: $spoolId")
-                } catch (e: Exception) {
-                    android.util.Log.e("SpoolmanDropdown", "Error finding filament for spool ID: $spoolId", e)
+        
+        if (currentSpoolId == null) {
+            android.util.Log.d("SpoolmanDropdown", "Spool ID is null, clearing selection")
+            onFilamentSelected(null)
+            return@LaunchedEffect
+        }
+        
+        if (spoolmanUrl.isNotEmpty()) {
+            android.util.Log.d("SpoolmanDropdown", "Attempting to find filament for spool ID: $currentSpoolId")
+            try {
+                val service = SpoolmanService(spoolmanUrl)
+                val filament = service.findFilamentBySpoolId(currentSpoolId)
+                android.util.Log.d("SpoolmanDropdown", "Found filament: $filament")
+                if (filament != null) {
+                    android.util.Log.d("SpoolmanDropdown", "Calling onFilamentSelected with: ${filament.spoolmanName}")
+                    onFilamentSelected(filament)
+                } else {
+                    android.util.Log.w("SpoolmanDropdown", "No filament found for spool ID: $currentSpoolId, clearing selection")
+                    onFilamentSelected(null)
                 }
-            } else {
-                android.util.Log.w("SpoolmanDropdown", "Spoolman URL is empty")
+            } catch (e: Exception) {
+                android.util.Log.e("SpoolmanDropdown", "Error finding filament for spool ID: $currentSpoolId", e)
+                onFilamentSelected(null)
             }
-        } ?: android.util.Log.d("SpoolmanDropdown", "No spool ID provided")
+        }
     }
     
     ExposedDropdownMenuBox(
@@ -83,6 +98,15 @@ fun SpoolmanFilamentDropdown(
             modifier = Modifier.clip(RoundedCornerShape(20.dp)),
             tonalElevation = 8.dp
         ) {
+            // Clear selection option
+            DropdownMenuItem(
+                text = { Text("Clear Selection") },
+                onClick = {
+                    onFilamentSelected(null)
+                    expanded = false
+                }
+            )
+            
             filaments.take(50).forEach { filament ->
                 DropdownMenuItem(
                     text = { 

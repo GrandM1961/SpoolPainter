@@ -39,7 +39,7 @@ fun SpoolPainterScreen(
     spools: List<FilamentSpool> = emptyList(),
     selectedSpool: FilamentSpool? = null,
     isLoadingSpools: Boolean = false,
-    onSpoolSelected: (FilamentSpool) -> Unit = {},
+    onSpoolSelected: (FilamentSpool?) -> Unit = {},
     spoolmanUrl: String = "",
     currentSpoolId: String? = null
 ) {
