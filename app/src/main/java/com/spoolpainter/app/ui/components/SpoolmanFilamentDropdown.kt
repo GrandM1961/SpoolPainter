@@ -8,18 +8,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.spoolpainter.app.domain.models.SpoolmanFilament
+import com.spoolpainter.app.domain.models.FilamentSpool
+import com.spoolpainter.app.data.remote.spoolman.SpoolmanService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpoolmanFilamentDropdown(
-    filaments: List<SpoolmanFilament>,
-    selectedFilament: SpoolmanFilament?,
-    onFilamentSelected: (SpoolmanFilament) -> Unit,
+    filaments: List<FilamentSpool>,
+    selectedFilament: FilamentSpool?,
+    onFilamentSelected: (FilamentSpool) -> Unit,
+    spoolmanUrl: String,
+    currentSpoolId: String?,
     isLoading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(currentSpoolId, spoolmanUrl) {
+        android.util.Log.d("SpoolmanDropdown", "LaunchedEffect triggered - spoolId: $currentSpoolId, url: $spoolmanUrl")
+        currentSpoolId?.let { spoolId ->
+            if (spoolmanUrl.isNotEmpty()) {
+                android.util.Log.d("SpoolmanDropdown", "Attempting to find filament for spool ID: $spoolId")
+                try {
+                    val service = SpoolmanService(spoolmanUrl)
+                    val filament = service.findFilamentBySpoolId(spoolId)
+                    android.util.Log.d("SpoolmanDropdown", "Found filament: $filament")
+                    filament?.let { 
+                        android.util.Log.d("SpoolmanDropdown", "Calling onFilamentSelected with: ${it.spoolmanName}")
+                        onFilamentSelected(it)
+                    } ?: android.util.Log.w("SpoolmanDropdown", "No filament found for spool ID: $spoolId")
+                } catch (e: Exception) {
+                    android.util.Log.e("SpoolmanDropdown", "Error finding filament for spool ID: $spoolId", e)
+                }
+            } else {
+                android.util.Log.w("SpoolmanDropdown", "Spoolman URL is empty")
+            }
+        } ?: android.util.Log.d("SpoolmanDropdown", "No spool ID provided")
+    }
     
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -27,7 +52,7 @@ fun SpoolmanFilamentDropdown(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedFilament?.let { "${it.vendor?.name ?: "Unknown"} - ${it.name}" } ?: "",
+            value = selectedFilament?.let { "${it.brand} - ${it.spoolmanName} - ${it.material}" } ?: "",
             onValueChange = { },
             readOnly = true,
             label = { Text("Select from Spoolman") },
@@ -61,7 +86,7 @@ fun SpoolmanFilamentDropdown(
             filaments.take(50).forEach { filament ->
                 DropdownMenuItem(
                     text = { 
-                        Text("${filament.vendor?.name ?: "Unknown"} - ${filament.name}")
+                        Text("${filament.brand} - ${filament.spoolmanName} - ${filament.material}")
                     },
                     onClick = {
                         onFilamentSelected(filament)

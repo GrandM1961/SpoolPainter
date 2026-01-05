@@ -1,19 +1,21 @@
 package com.spoolpainter.app.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import com.spoolpainter.app.data.local.OpenSpoolData
-import com.spoolpainter.app.domain.models.SpoolmanFilament
+import com.spoolpainter.app.domain.models.OpenSpoolData
+import com.spoolpainter.app.domain.models.FilamentSpool
 import com.spoolpainter.app.data.remote.spoolman.SpoolmanService
-import com.spoolpainter.app.data.local.MaterialDatabase
 
 class MainViewModel : ViewModel() {
     
     // UI State
     var readData by mutableStateOf<OpenSpoolData?>(null)
+        private set
+    var currentSpoolId by mutableStateOf<String?>(null)
         private set
     var dataVersion by mutableStateOf(0)
         private set
@@ -27,9 +29,9 @@ class MainViewModel : ViewModel() {
     // Spoolman State
     var spoolmanUrl by mutableStateOf("")
         private set
-    var spoolmanFilaments by mutableStateOf<List<SpoolmanFilament>>(emptyList())
+    var spools by mutableStateOf<List<FilamentSpool>>(emptyList())
         private set
-    var selectedSpoolmanFilament by mutableStateOf<SpoolmanFilament?>(null)
+    var selectedSpool by mutableStateOf<FilamentSpool?>(null)
         private set
     var isLoadingSpools by mutableStateOf(false)
         private set
@@ -44,12 +46,18 @@ class MainViewModel : ViewModel() {
     }
 
     fun handleNfcTagDetected(data: String?) {
+        Log.d("MainViewModel", "handleNfcTagDetected called with data: $data")
         data?.let { 
+            Log.d("MainViewModel", "Parsing JSON data: $it")
             OpenSpoolData.fromJson(it)?.let { openSpoolData ->
+                Log.d("MainViewModel", "Parsed OpenSpoolData: $openSpoolData")
                 readData = openSpoolData
+                currentSpoolId = openSpoolData.spoolId
+                Log.d("MainViewModel", "Set currentSpoolId to: $currentSpoolId")
                 dataVersion++
-            }
-        }
+                Log.d("MainViewModel", "Updated readData and dataVersion to: $dataVersion")
+            } ?: Log.e("MainViewModel", "Failed to parse OpenSpoolData from JSON")
+        } ?: Log.w("MainViewModel", "No data provided to handleNfcTagDetected")
     }
 
     fun showSnackbarMessage(message: String) {
@@ -80,9 +88,9 @@ class MainViewModel : ViewModel() {
         showSettings = false
     }
 
-    fun handleFilamentSelection(filament: SpoolmanFilament) {
-        selectedSpoolmanFilament = filament
-        val openSpoolData = createOpenSpoolDataFromFilament(filament)
+    fun handleFilamentSelection(filament: FilamentSpool) {
+        selectedSpool = filament
+        val openSpoolData = OpenSpoolData.toOpenSpoolData(filament)
         readData = openSpoolData
         dataVersion++
     }
@@ -96,58 +104,18 @@ class MainViewModel : ViewModel() {
         return url != DEFAULT_URL && url.isNotEmpty()
     }
 
-    private fun createOpenSpoolDataFromFilament(filament: SpoolmanFilament): OpenSpoolData {
-        val material = MaterialDatabase.getMaterial(filament.material)
-        val spoolmanTemp = filament.settings_extruder_temp
-        val spoolmanBedTemp = filament.settings_bed_temp
-        
-        val (minTemp, maxTemp) = if (spoolmanTemp != null && material != null) {
-            if (spoolmanTemp in material.defaultMinTemp..material.defaultMaxTemp) {
-                // Use default range if Spoolman temp falls within it
-                material.defaultMinTemp.toString() to material.defaultMaxTemp.toString()
-            } else {
-                // Use Spoolman temp +20 if outside default range
-                spoolmanTemp.toString() to (spoolmanTemp + 20).toString()
-            }
-        } else {
-            // Fallback to material defaults or generic range
-            material?.let { it.defaultMinTemp.toString() to it.defaultMaxTemp.toString() } 
-                ?: ("200" to "220")
-        }
-        
-        val (bedMinTemp, bedMaxTemp) = if (spoolmanBedTemp != null && material != null) {
-            if (spoolmanBedTemp in material.defaultBedMinTemp..material.defaultBedMaxTemp) {
-                // Use default range if Spoolman bed temp falls within it
-                material.defaultBedMinTemp.toString() to material.defaultBedMaxTemp.toString()
-            } else {
-                // Use Spoolman bed temp +10 if outside default range
-                spoolmanBedTemp.toString() to (spoolmanBedTemp + 10).toString()
-            }
-        } else {
-            // Fallback to material defaults or generic range
-            material?.let { it.defaultBedMinTemp.toString() to it.defaultBedMaxTemp.toString() } 
-                ?: ("50" to "70")
-        }
-        
-        return OpenSpoolData(
-            type = filament.material,
-            colorHex = filament.color_hex.removePrefix("#"),
-            brand = filament.vendor?.name ?: "Unknown",
-            minTemp = minTemp,
-            maxTemp = maxTemp,
-            bedMinTemp = bedMinTemp,
-            bedMaxTemp = bedMaxTemp
-        )
-    }
+//    private fun createOpenSpoolDataFromFilament(filament: FilamentSpool): OpenSpoolData {
+//        return OpenSpoolData.toOpenSpoolData(filament)
+//    }
 
     private fun loadSpoolmanFilaments() {
         isLoadingSpools = true
         viewModelScope.launch {
             try {
                 val service = SpoolmanService(spoolmanUrl)
-                spoolmanFilaments = service.getFilaments()
+                spools = service.getFilaments()
             } catch (e: Exception) {
-                spoolmanFilaments = emptyList()
+                spools = emptyList()
             } finally {
                 isLoadingSpools = false
             }

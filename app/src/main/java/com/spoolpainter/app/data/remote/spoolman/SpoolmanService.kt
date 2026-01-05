@@ -5,8 +5,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import com.spoolpainter.app.domain.models.SpoolmanSpool
-import com.spoolpainter.app.domain.models.SpoolmanFilament
+import com.spoolpainter.app.domain.models.FilamentSpool
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
@@ -14,10 +15,13 @@ import java.util.concurrent.TimeUnit
 interface SpoolmanApi {
     @GET("api/v1/spool")
     suspend fun getSpools(): Response<List<SpoolmanSpool>>
+    
+    @GET("api/v1/spool/{id}")
+    suspend fun getSpool(@Path("id") id: Int): Response<SpoolmanSpool>
 }
 
 class SpoolmanService(private val baseUrl: String) {
-    private var cachedFilaments: List<SpoolmanFilament>? = null
+    private var cachedFilaments: List<FilamentSpool>? = null
     private var lastFetchTime = 0L
     private val cacheValidityMs = 30_000L // 30 seconds
     
@@ -33,7 +37,7 @@ class SpoolmanService(private val baseUrl: String) {
         .build()
         .create(SpoolmanApi::class.java)
     
-    suspend fun getFilaments(): List<SpoolmanFilament> {
+    suspend fun getFilaments(): List<FilamentSpool> {
         val now = System.currentTimeMillis()
         
         // Return cached data if still valid
@@ -48,15 +52,7 @@ class SpoolmanService(private val baseUrl: String) {
             
             if (response.isSuccessful) {
                 val filaments = response.body()?.map { spool ->
-                    SpoolmanFilament(
-                        id = spool.filament.id ?: 0,
-                        name = spool.filament.name,
-                        material = spool.filament.material,
-                        vendor = spool.filament.vendor,
-                        color_hex = spool.filament.color_hex,
-                        settings_extruder_temp = spool.filament.settings_extruder_temp,
-                        settings_bed_temp = spool.filament.settings_bed_temp
-                    )
+                    FilamentSpool.fromSpoolman(spool)
                 } ?: emptyList()
                 
                 cachedFilaments = filaments
@@ -67,6 +63,23 @@ class SpoolmanService(private val baseUrl: String) {
             }
         } catch (e: Exception) {
             cachedFilaments ?: emptyList()
+        }
+    }
+    
+    suspend fun findFilamentBySpoolId(spoolId: String): FilamentSpool? {
+        val id = spoolId.toIntOrNull() ?: return null
+        
+        // First check cached filaments
+        cachedFilaments?.find { it.id == id }?.let { return it }
+        
+        // If not in cache, try to fetch specific spool
+        return try {
+            val response = api.getSpool(id)
+            if (response.isSuccessful) {
+                response.body()?.let { FilamentSpool.fromSpoolman(it) }
+            } else null
+        } catch (e: Exception) {
+            null
         }
     }
 }

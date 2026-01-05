@@ -31,12 +31,14 @@ fun MainScreenContent(
             showSnackbar = viewModel.showSnackbar,
             onSnackbarDismiss = { viewModel.dismissSnackbar() },
             onSettingsClick = { viewModel.showSettings() },
-            spoolmanFilaments = viewModel.spoolmanFilaments,
-            selectedSpoolmanFilament = viewModel.selectedSpoolmanFilament,
+            spools = viewModel.spools,
+            selectedSpool = viewModel.selectedSpool,
             isLoadingSpools = viewModel.isLoadingSpools,
-            onSpoolmanFilamentSelected = { filament ->
+            onSpoolSelected = { filament ->
                 viewModel.handleFilamentSelection(filament)
-            }
+            },
+            spoolmanUrl = viewModel.spoolmanUrl,
+            currentSpoolId = viewModel.currentSpoolId
         )
     }
 }

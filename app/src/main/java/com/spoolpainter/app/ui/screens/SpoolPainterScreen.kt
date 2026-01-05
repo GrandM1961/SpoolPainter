@@ -1,5 +1,6 @@
 package com.spoolpainter.app.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,8 +23,8 @@ import com.spoolpainter.app.ui.components.TemperatureControl
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.text.style.TextAlign
-import com.spoolpainter.app.data.local.OpenSpoolData
-import com.spoolpainter.app.domain.models.SpoolmanFilament
+import com.spoolpainter.app.domain.models.OpenSpoolData
+import com.spoolpainter.app.domain.models.FilamentSpool
 
 @Composable
 fun SpoolPainterScreen(
@@ -35,10 +36,12 @@ fun SpoolPainterScreen(
     showSnackbar: Boolean = false,
     onSnackbarDismiss: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
-    spoolmanFilaments: List<SpoolmanFilament> = emptyList(),
-    selectedSpoolmanFilament: SpoolmanFilament? = null,
+    spools: List<FilamentSpool> = emptyList(),
+    selectedSpool: FilamentSpool? = null,
     isLoadingSpools: Boolean = false,
-    onSpoolmanFilamentSelected: (SpoolmanFilament) -> Unit = {}
+    onSpoolSelected: (FilamentSpool) -> Unit = {},
+    spoolmanUrl: String = "",
+    currentSpoolId: String? = null
 ) {
     val defaultMaterial = MaterialDatabase.getMaterial("PLA")!!
     var filamentType by remember { mutableStateOf("PLA") }
@@ -54,16 +57,20 @@ fun SpoolPainterScreen(
 
     // Update UI when readData changes
     LaunchedEffect(readData, dataVersion) {
+        Log.d("SpoolPainterScreen", "LaunchedEffect triggered - readData: $readData, dataVersion: $dataVersion")
         readData?.let { data ->
-            val spool = data.toSpool()
+            Log.d("SpoolPainterScreen", "Processing readData: $data")
+            val spool = FilamentSpool.fromOpenSpool(data)
+            Log.d("SpoolPainterScreen", "Converted spool: $spool")
             filamentType = spool.material
             variant = spool.variant
             colorHex = spool.colorHex
             brand = spool.brand
-            minTemp = spool.minTemp.toString()
-            maxTemp = spool.maxTemp.toString()
+            minTemp = spool.minTemp?.toString() ?: minTemp
+            maxTemp = spool.maxTemp?.toString() ?: maxTemp
             bedMinTemp = spool.bedMinTemp?.toString() ?: bedMinTemp
             bedMaxTemp = spool.bedMaxTemp?.toString() ?: bedMaxTemp
+            Log.d("SpoolPainterScreen", "Updated UI - filamentType: $filamentType, brand: $brand, colorHex: $colorHex")
         }
     }
 
@@ -123,11 +130,13 @@ fun SpoolPainterScreen(
             ) {
                 Column(modifier = Modifier.padding(10.dp)) {
                     // Spoolman section
-                    if (spoolmanFilaments.isNotEmpty()) {
+                    if (spools.isNotEmpty()) {
                         SpoolmanFilamentDropdown(
-                            filaments = spoolmanFilaments,
-                            selectedFilament = selectedSpoolmanFilament,
-                            onFilamentSelected = onSpoolmanFilamentSelected,
+                            filaments = spools,
+                            selectedFilament = selectedSpool,
+                            onFilamentSelected = onSpoolSelected,
+                            spoolmanUrl = spoolmanUrl,
+                            currentSpoolId = currentSpoolId,
                             isLoading = isLoadingSpools,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -217,7 +226,8 @@ fun SpoolPainterScreen(
                         maxTemp = maxTemp,
                         bedMinTemp = bedMinTemp,
                         bedMaxTemp = bedMaxTemp,
-                        subtype = finalSubtype
+                        subtype = finalSubtype,
+                        spoolId = selectedSpool?.id?.toString()
                     ).toJson()
                     onWriteTag(data)
                 }
