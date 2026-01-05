@@ -28,7 +28,12 @@ class NfcManager {
             val ndef = Ndef.get(tag) ?: return false
             ndef.connect()
             
-            val record = NdefRecord.createTextRecord("en", data)
+            val record = NdefRecord(
+                NdefRecord.TNF_MIME_MEDIA,
+                "application/json".toByteArray(),
+                ByteArray(0),
+                data.toByteArray(Charset.forName("UTF-8"))
+            )
             val message = NdefMessage(arrayOf(record))
             
             ndef.writeNdefMessage(message)
