@@ -107,7 +107,7 @@ fun SpoolmanFilamentDropdown(
                 }
             )
             
-            filaments.take(50).forEach { filament ->
+            filaments.forEach { filament ->
                 DropdownMenuItem(
                     text = { 
                         Text("${filament.brand} - ${filament.spoolmanName} - ${filament.material}")

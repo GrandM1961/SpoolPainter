@@ -14,7 +14,10 @@ import java.util.concurrent.TimeUnit
 
 interface SpoolmanApi {
     @GET("api/v1/spool")
-    suspend fun getSpools(): Response<List<SpoolmanSpool>>
+    suspend fun getSpools(
+        @retrofit2.http.Query("limit") limit: Int,
+        @retrofit2.http.Query("offset") offset: Int = 0
+    ): Response<List<SpoolmanSpool>>
     
     @GET("api/v1/spool/{id}")
     suspend fun getSpool(@Path("id") id: Int): Response<SpoolmanSpool>
@@ -37,6 +40,10 @@ class SpoolmanService(private val baseUrl: String) {
         .build()
         .create(SpoolmanApi::class.java)
     
+    companion object {
+        private const val PAGE_SIZE = 10
+    }
+    
     suspend fun getFilaments(): List<FilamentSpool> {
         val now = System.currentTimeMillis()
         
@@ -48,20 +55,40 @@ class SpoolmanService(private val baseUrl: String) {
         }
         
         return try {
-            val response = api.getSpools()
+            val allFilaments = mutableListOf<FilamentSpool>()
+            var offset = 0
             
-            if (response.isSuccessful) {
-                val filaments = response.body()?.map { spool ->
-                    FilamentSpool.fromSpoolman(spool)
-                } ?: emptyList()
+            while (true) {
+                Log.d("SpoolmanService", "Fetching spools: offset=$offset, limit=$PAGE_SIZE")
+                val response = api.getSpools(PAGE_SIZE, offset)
                 
-                cachedFilaments = filaments
-                lastFetchTime = now
-                filaments
-            } else {
-                cachedFilaments ?: emptyList()
+                if (response.isSuccessful) {
+                    val batch = response.body()?.map { spool ->
+                        FilamentSpool.fromSpoolman(spool)
+                    } ?: emptyList()
+                    
+                    Log.d("SpoolmanService", "Received ${batch.size} spools")
+                    
+                    if (batch.isEmpty()) break
+                    
+                    allFilaments.addAll(batch)
+                    
+                    if (batch.size < PAGE_SIZE) break
+                    
+                    offset += PAGE_SIZE
+                }
+                else {
+                    Log.e("SpoolmanService", "API call failed: ${response.code()}")
+                    break
+                }
             }
+            
+            Log.d("SpoolmanService", "Total spools loaded: ${allFilaments.size}")
+            cachedFilaments = allFilaments
+            lastFetchTime = now
+            allFilaments
         } catch (e: Exception) {
+            Log.e("SpoolmanService", "Error loading spools", e)
             cachedFilaments ?: emptyList()
         }
     }
