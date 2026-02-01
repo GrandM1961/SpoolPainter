@@ -15,9 +15,10 @@ fun MainScreenContent(
     if (viewModel.showSettings) {
         SettingsScreen(
             spoolmanUrl = viewModel.spoolmanUrl,
+            spoolmanSortBy = viewModel.spoolmanSortBy,
             onSpoolmanUrlChange = { },
-            onSave = { newUrl -> 
-                viewModel.handleSettingsSave(context, newUrl)
+            onSave = { newUrl, newSort -> 
+                viewModel.handleSettingsSave(context, newUrl, newSort)
             },
             onBack = { viewModel.hideSettings() }
         )

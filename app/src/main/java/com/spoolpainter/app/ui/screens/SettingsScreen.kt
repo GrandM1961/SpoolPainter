@@ -12,11 +12,21 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SettingsScreen(
     spoolmanUrl: String,
+    spoolmanSortBy: String,
     onSpoolmanUrlChange: (String) -> Unit,
-    onSave: (String) -> Unit,
+    onSave: (String, String) -> Unit,
     onBack: () -> Unit
 ) {
     var tempUrl by remember { mutableStateOf(spoolmanUrl) }
+    var tempSort by remember { mutableStateOf(spoolmanSortBy) }
+    var sortExpanded by remember { mutableStateOf(false) }
+    
+    val sortOptions = mapOf(
+        "" to "None",
+        "filament.vendor.name:asc" to "Brand (A-Z)",
+        "filament.material:asc" to "Material (A-Z)",
+        "last_used:desc" to "Last Used"
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,6 +60,38 @@ fun SettingsScreen(
             modifier = Modifier.padding(top = 8.dp)
         )
         
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        ExposedDropdownMenuBox(
+            expanded = sortExpanded,
+            onExpandedChange = { sortExpanded = !sortExpanded }
+        ) {
+            OutlinedTextField(
+                value = sortOptions[tempSort] ?: "None",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Sort Spools By") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = sortExpanded) },
+                modifier = Modifier.fillMaxWidth().menuAnchor(),
+                singleLine = true
+            )
+            
+            ExposedDropdownMenu(
+                expanded = sortExpanded,
+                onDismissRequest = { sortExpanded = false }
+            ) {
+                sortOptions.forEach { (value, label) ->
+                    DropdownMenuItem(
+                        text = { Text(label) },
+                        onClick = {
+                            tempSort = value
+                            sortExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+        
         Spacer(modifier = Modifier.height(32.dp))
         
         Row(
@@ -64,7 +106,7 @@ fun SettingsScreen(
             }
             
             Button(
-                onClick = { onSave(tempUrl) },
+                onClick = { onSave(tempUrl, tempSort) },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Save")

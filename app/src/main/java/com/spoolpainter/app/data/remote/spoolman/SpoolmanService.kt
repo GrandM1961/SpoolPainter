@@ -16,7 +16,8 @@ interface SpoolmanApi {
     @GET("api/v1/spool")
     suspend fun getSpools(
         @retrofit2.http.Query("limit") limit: Int,
-        @retrofit2.http.Query("offset") offset: Int = 0
+        @retrofit2.http.Query("offset") offset: Int = 0,
+        @retrofit2.http.Query("sort") sort: String? = null
     ): Response<List<SpoolmanSpool>>
     
     @GET("api/v1/spool/{id}")
@@ -44,7 +45,7 @@ class SpoolmanService(private val baseUrl: String) {
         private const val PAGE_SIZE = 10
     }
     
-    suspend fun getFilaments(): List<FilamentSpool> {
+    suspend fun getFilaments(sortBy: String? = null): List<FilamentSpool> {
         val now = System.currentTimeMillis()
         
         // Return cached data if still valid
@@ -59,8 +60,8 @@ class SpoolmanService(private val baseUrl: String) {
             var offset = 0
             
             while (true) {
-                Log.d("SpoolmanService", "Fetching spools: offset=$offset, limit=$PAGE_SIZE")
-                val response = api.getSpools(PAGE_SIZE, offset)
+                Log.d("SpoolmanService", "Fetching spools: offset=$offset, limit=$PAGE_SIZE, sort=$sortBy")
+                val response = api.getSpools(PAGE_SIZE, offset, sortBy)
                 
                 if (response.isSuccessful) {
                     val batch = response.body()?.map { spool ->

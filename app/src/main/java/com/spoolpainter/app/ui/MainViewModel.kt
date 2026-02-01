@@ -35,10 +35,13 @@ class MainViewModel : ViewModel() {
         private set
     var isLoadingSpools by mutableStateOf(false)
         private set
+    var spoolmanSortBy by mutableStateOf("")
+        private set
 
     fun loadSpoolmanUrl(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         spoolmanUrl = prefs.getString(SPOOLMAN_URL_KEY, DEFAULT_URL) ?: DEFAULT_URL
+        spoolmanSortBy = prefs.getString(SPOOLMAN_SORT_KEY, "") ?: ""
         
         if (isValidSpoolmanUrl(spoolmanUrl)) {
             loadSpoolmanFilaments()
@@ -84,9 +87,11 @@ class MainViewModel : ViewModel() {
         showSettings = false
     }
 
-    fun handleSettingsSave(context: Context, newUrl: String) {
+    fun handleSettingsSave(context: Context, newUrl: String, newSort: String) {
         spoolmanUrl = newUrl
+        spoolmanSortBy = newSort
         saveSpoolmanUrl(context, newUrl)
+        saveSpoolmanSort(context, newSort)
         
         if (isValidSpoolmanUrl(newUrl)) {
             loadSpoolmanFilaments()
@@ -110,6 +115,11 @@ class MainViewModel : ViewModel() {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putString(SPOOLMAN_URL_KEY, url).apply()
     }
+    
+    private fun saveSpoolmanSort(context: Context, sort: String) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString(SPOOLMAN_SORT_KEY, sort).apply()
+    }
 
     private fun isValidSpoolmanUrl(url: String): Boolean {
         return url != DEFAULT_URL && url.isNotEmpty()
@@ -124,7 +134,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val service = SpoolmanService(spoolmanUrl)
-                spools = service.getFilaments()
+                spools = service.getFilaments(spoolmanSortBy.ifEmpty { null })
             } catch (e: Exception) {
                 spools = emptyList()
             } finally {
@@ -136,6 +146,7 @@ class MainViewModel : ViewModel() {
     companion object {
         private const val PREFS_NAME = "spoolpainter_prefs"
         private const val SPOOLMAN_URL_KEY = "spoolman_url"
+        private const val SPOOLMAN_SORT_KEY = "spoolman_sort"
         private const val DEFAULT_URL = "http://192.168.1."
     }
 }
