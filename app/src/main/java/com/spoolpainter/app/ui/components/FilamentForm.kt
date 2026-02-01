@@ -34,8 +34,8 @@ fun FilamentForm(
         OutlinedTextField(
             value = variant,
             onValueChange = { input ->
-                // Sanitize input: alphanumeric, spaces, hyphens only
-                val sanitized = input.filter { it.isLetterOrDigit() || it in " -" }
+                // Sanitize input: alphanumeric, spaces, hyphens, plus signs only
+                val sanitized = input.filter { it.isLetterOrDigit() || it in " -+" }
                     .take(25) // Max 10 characters
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
                 onVariantChange(sanitized)

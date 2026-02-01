@@ -35,10 +35,10 @@ fun SettingsScreen(
         
         OutlinedTextField(
             value = tempUrl,
-            onValueChange = { if (it.length <= 50) tempUrl = it },
+            onValueChange = { if (it.length <= 150) tempUrl = it },
             label = { Text("Spoolman Server URL") },
             placeholder = { Text("http://192.168.1.100:7912") },
-            supportingText = { Text("${tempUrl.length}/50") },
+            supportingText = { Text("${tempUrl.length}/150") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
