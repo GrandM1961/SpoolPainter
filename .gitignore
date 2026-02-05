@@ -98,3 +98,9 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+# Keystore credentials
+*.jks
+*.keystore
+keystore.pwd
+*-keystore.pwd

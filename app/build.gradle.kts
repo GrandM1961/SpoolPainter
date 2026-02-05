@@ -20,6 +20,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("KEYSTORE_FILE") ?: System.getProperty("user.home") + "/spoolpainter-release-key.jks"
+            val pwdFile = File(System.getProperty("user.home") + "/spoolpainter-keystore.pwd")
+            val keystorePass = System.getenv("KEYSTORE_PASSWORD") ?: pwdFile.takeIf { it.exists() }?.readText()?.trim() ?: ""
+            
+            storeFile = file(keystorePath)
+            storePassword = keystorePass
+            keyAlias = "spoolpainter"
+            keyPassword = keystorePass
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -27,6 +40,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
