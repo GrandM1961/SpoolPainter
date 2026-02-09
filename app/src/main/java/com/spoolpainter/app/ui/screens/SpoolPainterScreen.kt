@@ -211,6 +211,7 @@ fun SpoolPainterScreen(
             }
 
             // Lot Number
+            val hasSpoolmanLotNr = selectedSpool?.lotNr != null
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -219,17 +220,23 @@ fun SpoolPainterScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedTextField(
-                    value = lotNr,
-                    onValueChange = { lotNr = it },
+                    value = if (hasSpoolmanLotNr) selectedSpool?.lotNr ?: "" else lotNr,
+                    onValueChange = { input ->
+                        if (!hasSpoolmanLotNr && input.length <= 16 && input.all { it in '0'..'9' || it in 'A'..'F' || it in 'a'..'f' }) {
+                            lotNr = input.uppercase()
+                        }
+                    },
                     label = { Text("Lot Number") },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
+                    readOnly = hasSpoolmanLotNr,
                     shape = RoundedCornerShape(20.dp)
                 )
                 Button(
                     onClick = {
                         lotNr = OpenSpoolData.generateLotNr()
                     },
+                    enabled = !hasSpoolmanLotNr,
                     shape = RoundedCornerShape(17.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
@@ -259,7 +266,7 @@ fun SpoolPainterScreen(
                         bedMaxTemp = bedMaxTemp,
                         subtype = finalSubtype,
                         spoolId = selectedSpool?.id?.toString(),
-                        lotNr = lotNr.takeIf { it.isNotEmpty() }
+                        lotNr = selectedSpool?.lotNr ?: lotNr.takeIf { it.isNotEmpty() }
                     ).toJson()
                     onWriteTag(data)
                 }

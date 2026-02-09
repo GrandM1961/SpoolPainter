@@ -6,6 +6,7 @@ data class SpoolmanSpool(
     val remaining_weight: Float? = null,
     val used_weight: Float = 0f,
     val location: String? = null,
+    val lot_nr: String? = null,
     val archived: Boolean = false
 )
 

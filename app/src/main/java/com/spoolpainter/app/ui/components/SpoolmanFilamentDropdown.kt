@@ -91,7 +91,7 @@ fun SpoolmanFilamentDropdown(
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 }
             },
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
             enabled = !isLoading && filaments.isNotEmpty(),
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.SemiBold

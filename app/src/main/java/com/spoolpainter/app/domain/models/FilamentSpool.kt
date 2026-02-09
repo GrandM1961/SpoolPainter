@@ -16,6 +16,7 @@ data class FilamentSpool(
     val remainingWeight: Float? = null,
     val usedWeight: Float = 0f,
     val location: String? = null,
+    val lotNr: String? = null,
     val archived: Boolean = false,
     val spoolmanName: String?
 ) {
@@ -62,6 +63,7 @@ data class FilamentSpool(
                 remainingWeight = spool.remaining_weight,
                 usedWeight = spool.used_weight,
                 location = spool.location,
+                lotNr = spool.lot_nr,
                 archived = spool.archived,
                 spoolmanName = spool.filament.name
             )
