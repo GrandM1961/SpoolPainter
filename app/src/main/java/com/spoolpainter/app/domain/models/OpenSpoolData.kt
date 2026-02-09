@@ -15,10 +15,11 @@ data class OpenSpoolData(
     val bedMinTemp: String? = null,
     val bedMaxTemp: String? = null,
     val subtype: String = "Basic",
-    val spoolId: String? = null
+    val spoolId: String? = null,
+    val lotNr: String? = null
 ) {
     fun toJson(): String {
-        android.util.Log.d("OpenSpoolData", "toJson() called with: protocol=$protocol, version=$version, type=$type, colorHex=$colorHex, brand=$brand, minTemp=$minTemp, maxTemp=$maxTemp, bedMinTemp=$bedMinTemp, bedMaxTemp=$bedMaxTemp, subtype=$subtype, spoolId=$spoolId")
+        android.util.Log.d("OpenSpoolData", "toJson() called with: protocol=$protocol, version=$version, type=$type, colorHex=$colorHex, brand=$brand, minTemp=$minTemp, maxTemp=$maxTemp, bedMinTemp=$bedMinTemp, bedMaxTemp=$bedMaxTemp, subtype=$subtype, spoolId=$spoolId, lotNr=$lotNr")
         return JSONObject().apply {
             put("protocol", protocol)
             put("version", version)
@@ -30,6 +31,7 @@ data class OpenSpoolData(
             bedMinTemp?.let { put("bed_min_temp", it) }
             bedMaxTemp?.let { put("bed_max_temp", it) }
             spoolId?.let { put("spool_id", it) }
+            lotNr?.let { put("lot_nr", it) }
             if (subtype.isNotEmpty()) put("subtype", subtype)
         }.toString()
     }
@@ -52,7 +54,8 @@ data class OpenSpoolData(
                         bedMinTemp = jsonObj.optString("bed_min_temp").takeIf { it.isNotEmpty() },
                         bedMaxTemp = jsonObj.optString("bed_max_temp").takeIf { it.isNotEmpty() },
                         subtype = jsonObj.optString("subtype", "Basic"),
-                        spoolId = jsonObj.optString("spool_id").takeIf { it.isNotEmpty() }
+                        spoolId = jsonObj.optString("spool_id").takeIf { it.isNotEmpty() },
+                        lotNr = jsonObj.optString("lot_nr").takeIf { it.isNotEmpty() }
                     )
                 } else null
             } catch (e: Exception) {
@@ -71,6 +74,9 @@ data class OpenSpoolData(
                 spoolId = spool.id?.toString()
             )
         }
+
+        fun generateLotNr(): String = 
+            java.util.UUID.randomUUID().toString().replace("-", "").take(9).uppercase()
     }
 
 }

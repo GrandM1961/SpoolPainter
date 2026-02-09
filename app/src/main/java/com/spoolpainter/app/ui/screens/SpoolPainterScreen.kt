@@ -54,6 +54,7 @@ fun SpoolPainterScreen(
     var maxTemp by remember { mutableStateOf(defaultMaterial.defaultMaxTemp.toString()) }
     var bedMinTemp by remember { mutableStateOf(defaultMaterial.defaultBedMinTemp.toString()) }
     var bedMaxTemp by remember { mutableStateOf(defaultMaterial.defaultBedMaxTemp.toString()) }
+    var lotNr by remember { mutableStateOf(OpenSpoolData.generateLotNr()) }
 
     // Update UI when readData changes
     LaunchedEffect(readData, dataVersion) {
@@ -70,6 +71,7 @@ fun SpoolPainterScreen(
             maxTemp = spool.maxTemp?.toString() ?: maxTemp
             bedMinTemp = spool.bedMinTemp?.toString() ?: bedMinTemp
             bedMaxTemp = spool.bedMaxTemp?.toString() ?: bedMaxTemp
+            lotNr = data.lotNr ?: OpenSpoolData.generateLotNr()
             Log.d("SpoolPainterScreen", "Updated UI - filamentType: $filamentType, brand: $brand, colorHex: $colorHex")
         }
     }
@@ -208,6 +210,35 @@ fun SpoolPainterScreen(
                 }
             }
 
+            // Lot Number
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = lotNr,
+                    onValueChange = { lotNr = it },
+                    label = { Text("Lot Number") },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(20.dp)
+                )
+                Button(
+                    onClick = {
+                        lotNr = OpenSpoolData.generateLotNr()
+                    },
+                    shape = RoundedCornerShape(17.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Next Spool")
+                }
+            }
+
             WriteTagButton(
                 onClick = {
                     val materialName = when {
@@ -227,7 +258,8 @@ fun SpoolPainterScreen(
                         bedMinTemp = bedMinTemp,
                         bedMaxTemp = bedMaxTemp,
                         subtype = finalSubtype,
-                        spoolId = selectedSpool?.id?.toString()
+                        spoolId = selectedSpool?.id?.toString(),
+                        lotNr = lotNr.takeIf { it.isNotEmpty() }
                     ).toJson()
                     onWriteTag(data)
                 }
@@ -280,9 +312,10 @@ private fun ReadTagButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun WriteTagButton(onClick: () -> Unit) {
+private fun WriteTagButton(enabled: Boolean = true, onClick: () -> Unit) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
             .height(45.dp),
@@ -304,7 +337,7 @@ private fun WriteTagButton(onClick: () -> Unit) {
 @Composable
 private fun InstructionText() {
     Text(
-        text = "• Configure your filament settings above\n• Tap 'Write to NFC' and hold tag near phone\n• Use 'Read NFC Tag' to load existing settings",
+        text = "• Configure your filament settings above\n• Tap 'Write to NFC'\n• Same spool = same Lot Number\n• Use 'Read NFC Tag' to load existing settings",
         style = MaterialTheme.typography.bodyMedium,
     )
 }
