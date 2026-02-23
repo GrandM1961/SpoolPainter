@@ -59,12 +59,12 @@ import kotlin.math.sqrt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorSelector(
-    selectedColor: String,
-    onColorSelected: (String) -> Unit
+    selectedColor: String?,
+    onColorSelected: (String?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showColorPicker by remember { mutableStateOf(false) }
-    var hexInput by remember { mutableStateOf(selectedColor) }
+    var hexInput by remember { mutableStateOf(selectedColor ?: "") }
     var originalColor by remember { mutableStateOf(selectedColor) }
 
     val commonColors = mapOf(
@@ -78,7 +78,8 @@ fun ColorSelector(
         "Black" to "000000"
     )
 
-    val displayValue = commonColors.entries.find { it.value == selectedColor }?.key ?: selectedColor
+    val displayValue = if (selectedColor == null) "No Color" 
+        else commonColors.entries.find { it.value == selectedColor }?.key ?: selectedColor
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -90,13 +91,17 @@ fun ColorSelector(
             readOnly = true,
             label = { Text("Color") },
             leadingIcon = {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(Color(android.graphics.Color.parseColor("#$selectedColor")))
-                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                )
+                if (selectedColor != null) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(Color(android.graphics.Color.parseColor("#$selectedColor")))
+                            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    )
+                } else {
+                    NoColorIcon(size = 24.dp)
+                }
             },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
@@ -164,6 +169,17 @@ fun ColorSelector(
 //                },
 //                onClick = { }
 //            )
+
+            DropdownMenuItem(
+                text = { Text("No Color") },
+                onClick = {
+                    onColorSelected(null)
+                    hexInput = ""
+                    expanded = false
+                }
+            )
+
+            Divider()
 
             commonColors.forEach { (name, hex) ->
                 DropdownMenuItem(
@@ -284,7 +300,8 @@ fun ColorSelector(
                                 .height(64.dp)
                                 .padding(top = 7.dp)
                                 .background(
-                                    Color(android.graphics.Color.parseColor("#$selectedColor")),
+                                    if (selectedColor != null) Color(android.graphics.Color.parseColor("#$selectedColor"))
+                                    else Color.Transparent,
                                     RoundedCornerShape(8.dp)
                                 )
                                 .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
@@ -294,7 +311,7 @@ fun ColorSelector(
 
                     // Advanced Color Picker like in screenshot
                     ColorWheel(
-                        selectedColor = selectedColor,
+                        selectedColor = selectedColor ?: "FFFFFF",
                         onColorSelected = { color ->
                             onColorSelected(color)
                             hexInput = color
@@ -315,7 +332,7 @@ fun ColorSelector(
                         OutlinedButton(
                             onClick = {
                                 onColorSelected(originalColor) // Restore original color
-                                hexInput = originalColor
+                                hexInput = originalColor ?: ""
                                 showColorPicker = false
                             },
                             shape = RoundedCornerShape(16.dp)
@@ -332,6 +349,23 @@ fun ColorSelector(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun NoColorIcon(size: androidx.compose.ui.unit.Dp) {
+    val outlineColor = MaterialTheme.colorScheme.outline
+    Canvas(
+        modifier = Modifier
+            .size(size)
+    ) {
+        drawCircle(color = outlineColor, style = Stroke(1.dp.toPx()))
+        drawLine(
+            color = outlineColor,
+            start = Offset(this.size.width * 0.15f, this.size.height * 0.85f),
+            end = Offset(this.size.width * 0.85f, this.size.height * 0.15f),
+            strokeWidth = 1.5.dp.toPx()
+        )
     }
 }
 

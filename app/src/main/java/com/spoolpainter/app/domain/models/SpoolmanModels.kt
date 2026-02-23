@@ -15,7 +15,7 @@ data class SpoolmanFilament(
     val name: String,
     val material: String,
     val vendor: SpoolmanVendor?,
-    val color_hex: String,
+    val color_hex: String?,
     val settings_extruder_temp: Int?,
     val settings_bed_temp: Int?
 )

@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +41,7 @@ fun SpoolPainterScreen(
     selectedSpool: FilamentSpool? = null,
     isLoadingSpools: Boolean = false,
     onSpoolSelected: (FilamentSpool?) -> Unit = {},
+    onRefreshSpools: () -> Unit = {},
     spoolmanUrl: String = "",
     currentSpoolId: String? = null
 ) {
@@ -47,7 +49,7 @@ fun SpoolPainterScreen(
     var filamentType by remember { mutableStateOf("PLA") }
     var customMaterial by remember { mutableStateOf("") }
     var variant by remember { mutableStateOf("") }
-    var colorHex by remember { mutableStateOf("FFFFFF") }
+    var colorHex by remember { mutableStateOf<String?>("FFFFFF") }
     var brand by remember { mutableStateOf("Generic") }
     var customBrand by remember { mutableStateOf("") }
     var minTemp by remember { mutableStateOf(defaultMaterial.defaultMinTemp.toString()) }
@@ -97,7 +99,8 @@ fun SpoolPainterScreen(
                 Spacer(modifier = Modifier.width(48.dp)) // Balance the layout
                 
                 SpoolPainterLogo(
-                    color = Color(android.graphics.Color.parseColor("#$colorHex"))
+                    color = colorHex?.let { Color(android.graphics.Color.parseColor("#$it")) }
+                        ?: MaterialTheme.colorScheme.outline
                 )
                 
                 IconButton(
@@ -115,10 +118,18 @@ fun SpoolPainterScreen(
                 }
             }
             
-            Column(
+            @OptIn(ExperimentalMaterial3Api::class)
+            PullToRefreshBox(
+                isRefreshing = isLoadingSpools,
+                onRefresh = onRefreshSpools,
+                indicator = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+            ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -287,6 +298,7 @@ fun SpoolPainterScreen(
             )
 
             InstructionText()
+            }
             }
         }
         // Custom snackbar popup

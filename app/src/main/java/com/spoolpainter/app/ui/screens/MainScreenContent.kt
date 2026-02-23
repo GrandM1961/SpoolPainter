@@ -38,6 +38,7 @@ fun MainScreenContent(
             onSpoolSelected = { filament ->
                 viewModel.handleFilamentSelection(filament)
             },
+            onRefreshSpools = { viewModel.refreshSpools() },
             spoolmanUrl = viewModel.spoolmanUrl,
             currentSpoolId = viewModel.currentSpoolId
         )

@@ -8,7 +8,7 @@ data class OpenSpoolData(
     val protocol: String = "openspool",
     val version: String = "1.0",
     val type: String,
-    val colorHex: String,
+    val colorHex: String?,
     val brand: String,
     val minTemp: String,
     val maxTemp: String,
@@ -24,7 +24,7 @@ data class OpenSpoolData(
             put("protocol", protocol)
             put("version", version)
             put("type", type)
-            put("color_hex", colorHex)
+            put("color_hex", colorHex ?: "")
             put("brand", brand)
             put("min_temp", minTemp)
             put("max_temp", maxTemp)
@@ -47,7 +47,7 @@ data class OpenSpoolData(
                     val material = MaterialDatabase.getMaterial(type)
                     OpenSpoolData(
                         type = type,
-                        colorHex = jsonObj.optString("color_hex", "000000"),
+                        colorHex = jsonObj.optString("color_hex", "").takeIf { it.isNotEmpty() },
                         brand = jsonObj.optString("brand", "Unknown"),
                         minTemp = jsonObj.optString("min_temp", material?.defaultMinTemp?.toString() ?: "200"),
                         maxTemp = jsonObj.optString("max_temp", material?.defaultMaxTemp?.toString() ?: "220"),

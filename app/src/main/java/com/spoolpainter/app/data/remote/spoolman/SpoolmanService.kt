@@ -45,13 +45,15 @@ class SpoolmanService(private val baseUrl: String) {
         private const val PAGE_SIZE = 10
     }
     
-    suspend fun getFilaments(sortBy: String? = null): List<FilamentSpool> {
+    suspend fun getFilaments(sortBy: String? = null, forceRefresh: Boolean = false): List<FilamentSpool> {
         val now = System.currentTimeMillis()
         
-        // Return cached data if still valid
-        cachedFilaments?.let { cached ->
-            if (now - lastFetchTime < cacheValidityMs) {
-                return cached
+        // Return cached data if still valid and not forcing refresh
+        if (!forceRefresh) {
+            cachedFilaments?.let { cached ->
+                if (now - lastFetchTime < cacheValidityMs) {
+                    return cached
+                }
             }
         }
         

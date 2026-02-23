@@ -13,13 +13,13 @@ fun FilamentForm(
     filamentType: String,
     customMaterial: String,
     variant: String,
-    colorHex: String,
+    colorHex: String?,
     brand: String,
     customBrand: String,
     onFilamentTypeChange: (String, String, String, String, String) -> Unit,
     onCustomMaterialChange: (String) -> Unit,
     onVariantChange: (String) -> Unit,
-    onColorChange: (String) -> Unit,
+    onColorChange: (String?) -> Unit,
     onBrandChange: (String) -> Unit,
     onCustomBrandChange: (String) -> Unit
 ) {

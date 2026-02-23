@@ -111,6 +111,12 @@ class MainViewModel : ViewModel() {
         dataVersion++
     }
 
+    fun refreshSpools() {
+        if (isValidSpoolmanUrl(spoolmanUrl)) {
+            loadSpoolmanFilaments()
+        }
+    }
+
     private fun saveSpoolmanUrl(context: Context, url: String) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putString(SPOOLMAN_URL_KEY, url).apply()
@@ -134,7 +140,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val service = SpoolmanService(spoolmanUrl)
-                spools = service.getFilaments(spoolmanSortBy.ifEmpty { null })
+                spools = service.getFilaments(spoolmanSortBy.ifEmpty { null }, forceRefresh = true)
             } catch (e: Exception) {
                 spools = emptyList()
             } finally {
