@@ -6,16 +6,16 @@
     <string>${EXECUTABLE_NAME}</string>
 
     <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <string>\$(PRODUCT\_BUNDLE\_IDENTIFIER)</string>
 
     <key>CFBundleName</key>
-    <string>$(PRODUCT_NAME)</string>
+    <string>\$(PRODUCT\_NAME)</string>
 
     <key>CFBundleShortVersionString</key>
-    <string>$(MARKETING_VERSION)</string>
+    <string>\$(MARKETING\_VERSION)</string>
 
     <key>CFBundleVersion</key>
-    <string>$(CURRENT_PROJECT_VERSION)</string>
+    <string>\$(CURRENT\_PROJECT\_VERSION)</string>
 
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
@@ -42,9 +42,17 @@
         </dict>
     </dict>
 
-    <key>com.apple.developer.nfc.readersession.formats</key>
+    <key>NSNFCUsageDescription</key>
+    <string>Use NFC to read tags.</string>
+
+    <key>ISO7816 application identifiers for NFC Tag Reader Session</key>
     <array>
-        <string>NDEF</string>
+        <dict>
+            <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+            <array>
+                <string>A0000002471001</string>
+            </array>
+        </dict>
     </array>
 </dict>
 </plist>

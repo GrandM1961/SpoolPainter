@@ -28,7 +28,7 @@ struct PriceField: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(edited ? Color.yellow : Color.gray, lineWidth: 2)
                 )
-                .onChange(of: price) { _, newValue in
+                .onChange(of: price) {_, newValue in
                     let normalized = newValue.replacingOccurrences(of: "\n", with: "")
                                               .replacingOccurrences(of: ",", with: ".")
                     price = normalized
