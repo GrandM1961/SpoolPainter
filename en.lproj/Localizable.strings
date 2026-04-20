@@ -1,0 +1,111 @@
+"color_picker.title" = "Color Picker";
+"color_picker.brightness" = "Brightness";
+"color_picker.cancel" = "Cancel";
+"color_picker.done" = "Done";
+"color.white" = "White";
+"color.black" = "Black";
+"color.red" = "Red";
+"color.blue" = "Blue";
+"color.green" = "Green";
+"color.yellow" = "Yellow";
+"color.gray" = "Gray";
+"color.orange" = "Orange";
+"color.purple" = "Purple";
+"color.pink" = "Pink";
+"color.title" = "Color";
+/*SixFieldsTwoColumns*/
+"labeledfield.info" = "More Information";
+"labeledfield.close" = "Close";
+"labeledfield.info" = "The filament weight of a full spool (net weight). This should not include the weight of the spool itself, only the filament. This is usually listed on the packaging.";
+"density.title" = "Density";
+"weight.title" = "Weight";
+"weight.infotitle" = "Weight";
+"weight.infotext" = "The filament weight of a full spool (net weight). This should not include the weight of the spool itself, only the filament. This is usually listed on the packaging.";
+"weight.spool.title" = "Spool Weight";
+"weight.spool.infotitle" = "Spool Weight";
+"weight.spool.infotext" = "The weight of an empty spool. Used to determine the measured weight of a spool.";
+"diameter.title" = "Diameter";
+"SKU.title" = "Lot Nr:";
+"SKU.infotitle" = "Lot Nr:";
+"SKU.infotext" = "e.g., SKU, EAN, UPC, etc.";
+"PriceField.Title" = "Price";
+/*SpoolmanFilamentSelector*/
+"spoolman_filament_selector.title" = "Connect the Spoolman server in the settings for easy filament selection";
+"spoolman.loading" = "Loading...";
+"spoolman.connect.tooltip" = "Connect the Spoolman server in the settings for easy filament selection";
+"spoolman.loading" = "Loading...";
+"choose.spoolman.filament" = "Choose your Spoolman filament";
+"selected.spoolman.filament" = "Selected";
+/*variantField*/
+"variant-placeholder" = "Variant (Wood, Basic, Pro, HS, etc.)";
+/*Temperatures*/
+"temperature.title" = "Temperatures";
+/*Filament*/
+"filamentview.newfilament" = "New Filament";
+"filamentview.name.filament" = "Filament name";
+"filamentview.add.filament" = "Add";
+"filament" = "Otherwise";
+"filament.kind" = "Type of filament";
+/*Defaults*/
+"storedColorName.default" = "White";
+"selectedColorName.default" = "White";
+"storedSelectedColorName.default" = "White";
+/*Brand*/
+"storedBrand.title" = "Generic";
+"Brand.title" = "Generic";
+"brandname" = "Brand name";
+"isBrandSelected" = "Generic";
+"brand" = "Brand";
+"isOtherBrand" = "Other";
+/*Spoolman Settings*/
+"spoolman.button.save" = "Save";
+"spoolman.button.cancel" = "Cancel";
+"spoolman.text" = "Enter the URL of your local Spoolman server:";
+"spoolman.settings" = "← Settings";
+/*NFC */
+"writing.button" = "Write to NFC";
+"clear.button" = "Erase NFC Tag";
+"reading.button" = "Reading an NFC tag";
+"config.text" = "Configure your filament settings above";
+"writing.text" = "Tap 'Write to NFC' and hold your tag close to your phone";
+"reading.text" = "Use “Read from Tag” to adjust the existing settings";
+/*ContentView*/
+"reset.fields" = "Restore fields";
+"reset.allfields.text" = "Reset all fields to their default values?";
+"cancel.button" = "Cancel";
+"reset.button" = "Reset";
+"read.spool.info" = "No spool available";
+"read.spool.unknown" = "Unknown";
+"read.spool.xtracolors" = "Extra colors:";
+"read.spool.weight" = "Weight:";
+"read.spool.diameter" = "Diameter:";
+"read.spool.spoolweight" = "Weight of Spool:";
+"read.spool.density" = "Density:";
+"read.spool.price" = "Price:";
+"read.spool.lotnr" = "Lot Nr:";
+/*SpoolNFCViewModel*/
+"dbg.reader.lastSpool" = "DBG reader.lastSpool currently:";
+"dbg.readNDEF.completion" = "DBG readNDEF completion — message:";
+"failed.parse.ndef.format" = "Failed to parse NDEF message:";
+"failed.parse.openspool" = "Failed to parse OpenSpool:"; 
+"assigned.pending. lastpool" = "Assigned lastSpool & pendingNdefMessage from parsed spool:"; 
+"spool.detected" = "Spool detected";
+"payload.not.valid" = "Payload is not valid UTF-8";
+"json.parse.error" = "JSON parse error:";
+"json.valid" = "JSON valid";
+"NFC.reading.this.device" = "NFC reading not available on this device.";
+"hold.close.tag" = "Hold your iPhone near the filament tag.";
+"reader.started.waiting" = "Reader started, waiting for tag...";
+"reader.started" = "Reader started";
+"tag.cleared" = "Tag erased";
+"tag.cleared.success" = "Tag successfully erased";
+"query.ndef.failed" = "Query NDEF failed:";
+"tag.noNDEF" = "The tag is not NDEF";
+"query.failed" = "Failed to retrieve NDEF:";
+"tag.no.support" = "Tag does not support NDEF.";
+"hold.close" = "Hold tag near iPhone to write sample Spool data.";
+"hold.near.tag" = "Hold tag near iPhone to write your text.";
+"hold.close.clear" = "Hold tag near iPhone to clear the tag.";
+"hold.near.tag.write" = "Hold your iPhone near the NFC tag to write.";
+"write.start.waiting" = "Writer started, waiting for tag...";
+"write.succes" = "Write successfull";
