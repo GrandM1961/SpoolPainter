@@ -5,9 +5,6 @@
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
 
-    <key>CFBundleIdentifier</key>
-    <string>\$(PRODUCT\_BUNDLE\_IDENTIFIER)</string>
-
     <key>CFBundleName</key>
     <string>\$(PRODUCT\_NAME)</string>
 
@@ -28,18 +25,8 @@
 
     <key>NSAppTransportSecurity</key>
     <dict>
-        <key>NSExceptionDomains</key>
-        <dict>
-            <key>192.168.</key>
-            <dict>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-            </dict>
-        </dict>
+        <key>NSAllowsArbitraryLoadsInLocalNetworking</key>
+        <true/>
     </dict>
 
     <key>NSNFCUsageDescription</key>

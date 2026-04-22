@@ -530,7 +530,7 @@ struct ContentView: View {
                     .onAppear {
                         // zet selectie als deze spool door NFC is gedetecteerd
                         DispatchQueue.main.async {
-                            withAnimation { selectedSpool = spool }
+                            withAnimation(.none) { selectedSpool = spool }
                             // ensure density field shows two decimals
                             if let d = reader.lastSpool?.density {
                             dichtheid = String(format: "%.2f", d)
@@ -1046,6 +1046,8 @@ struct ContentView: View {
                                     Circle().frame(width: 8, height: 8).foregroundColor(.yellow)
                                     Circle().frame(width: 8, height: 8).foregroundColor(.yellow)
                                 }
+                                .padding(8)                     // vergroot hit area
+                                .contentShape(Rectangle())      // maak hele rechthoek tappable
                             }
                             .buttonStyle(PlainButtonStyle())
                         }

@@ -13,6 +13,7 @@ struct SpoolPainterApp: App {
         WindowGroup {
             ContentView()  // ← DIT moet ContentView zijn!
                 .environment(\.scenePhase, .active)
+                .preferredColorScheme(.dark)
         }
     }
 }

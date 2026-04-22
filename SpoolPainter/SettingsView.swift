@@ -88,9 +88,10 @@ struct SettingsView: View {
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .focused($focusedField)
-                        .foregroundColor(.clear)
-                        .accentColor(.white)
-                        .padding(.horizontal, 20)
+                        .font(.caption.bold())                // belangrijk: match de overlay font
+                            .foregroundColor(Color.white.opacity(0.01)) // nearly invisible but measurable
+                            .accentColor(.white)                  // caret color
+                            .padding(.horizontal, 20)             // match the overlay padding
                         .frame(height: fieldHeight)
                         .background(Color.clear)
                         .zIndex(3)
