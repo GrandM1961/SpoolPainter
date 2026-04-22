@@ -708,7 +708,7 @@ struct ContentView: View {
             }
             .fontWeight(.semibold)
             .foregroundColor(.black)
-            .padding(.vertical, 14)
+            .padding(.vertical, 12)
             .padding(.horizontal, 8)
             .background(Color.yellow)
             .cornerRadius(8)
