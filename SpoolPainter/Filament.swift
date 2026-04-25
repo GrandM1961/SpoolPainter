@@ -18,6 +18,8 @@ struct Filament: Identifiable, Hashable, Decodable {
     let settings_bed_max_temp: Int?
     let color_hex: String?
     let extra: [String: String]?
+    let remaining_weight: Double?
+    
 }
 
 struct Vendor: Decodable, Hashable {

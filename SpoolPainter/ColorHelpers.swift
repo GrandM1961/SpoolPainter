@@ -57,12 +57,24 @@ private let colorMap: [String: Color] = [
 ]
 
 enum AppLanguage { case nl, en, de }
+
 var currentAppLanguage: AppLanguage {
-    let code = UserDefaults.standard.string(forKey: "appLanguage") ?? "nl"
-    switch code {
+    // First, check if user manually selected a language in your app
+    if let savedLanguage = UserDefaults.standard.string(forKey: "appLanguage") {
+        switch savedLanguage {
+        case "de": return .de
+        case "en": return .en
+        default: return .nl
+        }
+    }
+    
+    // If no manual selection, use the device's system language
+    let systemLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+    switch systemLanguage {
     case "de": return .de
     case "en": return .en
-    default: return .nl
+    case "nl": return .nl
+    default: return .en  // Default to English for other languages
     }
 }
 

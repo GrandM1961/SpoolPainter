@@ -19,6 +19,7 @@ struct SixFieldsTwoColumns: View {
 
    // Currency binding for price picker
    @Binding var currency: String
+    var keyboard: UIKeyboardType = .numbersAndPunctuation
     
   
     
@@ -36,7 +37,7 @@ struct SixFieldsTwoColumns: View {
                badgeOffsetX: 12,
                badgeOffsetY: -10,
                placeholder: "gram",
-               keyboard: .decimalPad
+               keyboard: keyboard
            )
            .frame(maxWidth: .infinity)
 
@@ -50,7 +51,7 @@ struct SixFieldsTwoColumns: View {
                badgeOffsetX: 12,
                badgeOffsetY: -10,
                placeholder: "gram",
-               keyboard: .decimalPad
+               keyboard: keyboard
            )
            .frame(maxWidth: .infinity)
        }
@@ -63,7 +64,7 @@ struct SixFieldsTwoColumns: View {
                badgeOffsetX: 12,
                badgeOffsetY: -10,
                placeholder: "g/cm³",
-               keyboard: .decimalPad
+               keyboard: keyboard
                
            )
            .frame(maxWidth: .infinity)
@@ -76,7 +77,7 @@ struct SixFieldsTwoColumns: View {
                badgeOffsetX: 12,
                badgeOffsetY: -10,
                placeholder: "1.75 mm",
-               keyboard: .decimalPad
+               keyboard: keyboard
            )
            .frame(maxWidth: .infinity)
        }

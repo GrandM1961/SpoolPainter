@@ -27,6 +27,29 @@ class SpoolmanClient {
             .eraseToAnyPublisher()
     }
     
+    // Add to SpoolmanClient.swift
+    func fetchSettings(urlString: String) -> AnyPublisher<[String: Any], Error> {
+        var s = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !s.hasPrefix("http://") && !s.hasPrefix("https://") { s = "http://\(s)" }
+        guard let url = URL(string: s + "/api/v1/settings") else {
+            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+        }
+        
+        return URLSession.shared.dataTaskPublisher(for: url)
+            .tryMap { data, resp in
+                if let http = resp as? HTTPURLResponse, !(200..<300 ~= http.statusCode) {
+                    throw URLError(.badServerResponse)
+                }
+                return data
+            }
+            .tryMap { data in
+                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+                return json
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
     func parseColorName(from productName: String) -> String {
         let candidates = ["black","white","red","blue","yellow","green","orange","pink","purple","brown","gray","grey"]
         let parts = productName.lowercased().split(separator: " ").map { String($0).trimmingCharacters(in: .punctuationCharacters) }

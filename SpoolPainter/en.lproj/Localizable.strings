@@ -109,3 +109,10 @@
 "hold.near.tag.write" = "Hold your iPhone near the NFC tag to write.";
 "write.start.waiting" = "Writer started, waiting for tag...";
 "write.succes" = "Write successfull";
+"type" = "Type";
+"variant" = "Variant";
+"color" = "Color";
+"spoolman.connect.tooltip" = "Connect to Spoolman server to select filament";
+"spoolman.loading" = "Loading filaments...";
+"choose.spoolman.filament" = "Choose filament from Spoolman";
+"selected.spoolman.filament" = "Filament selected";

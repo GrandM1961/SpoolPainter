@@ -87,6 +87,7 @@ struct ContentView: View {
     
     
     
+    
     //Brand
     @State private var brand = NSLocalizedString("Brand.title", comment: "Brand title")
     @State private var customBrand: String = ""
@@ -274,6 +275,20 @@ struct ContentView: View {
             
             reader.lastSpool = nil
             selectedSpool = nil
+            
+            
+            // FORCE clear weight and diameter - no conditions
+            self.gewicht = ""
+            self.diameter = ""
+            self.storedGewicht = ""
+            self.storedDiameter = ""
+            
+            // FORCE set edited flags to false
+            self.gewichtEdited = false
+            self.diameterEdited = false
+            self.storedGewichtEdited = false
+            self.storedDiameterEdited = false
+                    
         }
         print("restoreDefaults start")
         storedPrijs = ""
@@ -388,6 +403,7 @@ struct ContentView: View {
                         spoolmanIP: $spoolmanIP,
                         selectedFilamentID: $selectedFilamentID,
                         isSelectedVisual: $isSelectedVisual,
+                        disableAutoApply: isResetting,  // ← MOVE THIS BEFORE onApply
                         onApply: { (filament: Filament) in
                             applyFilamentOption(filament)
                             storedGewicht = gewicht
@@ -401,7 +417,6 @@ struct ContentView: View {
                             storedMaxTemp = maxTemp
                             storedBedMinTemp = bedMinTemp
                             storedBedMaxTemp = bedMaxTemp
-                            
                         }
                     )
                     
@@ -715,22 +730,11 @@ struct ContentView: View {
             .alert(NSLocalizedString("reset.allfields.text", comment: "Reset selected fields text"), isPresented: $showingResetConfirm) {
                 Button(NSLocalizedString("cancel.button", comment: "Cancel button"), role: .cancel) {}
                 Button(NSLocalizedString("reset.button", comment: "Reset button"), role: .destructive) {
-                    isResetting = true
                     restoreDefaults()
-                    DispatchQueue.main.async {
-                        // forceer refresh: zet eerst een neutrale waarde
-                        selectedColorName = "White"
-                        isColorSelected = false
-                        brand = storedBrand
-                        isBrandSelected = storedIsBrandSelected
-                        
-                        // stel echte waarden iets later zodat Menu bindings refreshen
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            selectedColorName = storedSelectedColorName.trimmingCharacters(in: .whitespacesAndNewlines)
-                            selectedColorColor = getColorForName(selectedColorName) // of direct Color(hex:)
-                            isColorSelected = storedIsColorSelected
-                            isResetting = false
-                        }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        restoreDefaults()
+                        refreshToggle.toggle()
                     }
                 }
             }
@@ -783,6 +787,13 @@ struct ContentView: View {
     
     // Definitieve apply — gebruikt alleen API-velden in prioriteit
     func applyFilamentOption(_ f: Filament) {
+        // If reset is happening, ignore completely
+        guard !isResetting else {
+                print("Reset in progress - skipping weight/diameter")
+                return
+            }
+            
+            print("⚠️ applyFilamentOption called for: \(f.name)")
         print("DBG before assign gewicht:", gewicht)
         if let w = f.weight { gewicht = String(Int(w)) } else { gewicht = "" }
         print("DBG after assign gewicht:", gewicht)

@@ -4,22 +4,34 @@ struct PriceField: View {
     @Binding var price: String
     @Binding var currency: String
     @Binding var edited: Bool
+    var keyboard: UIKeyboardType = .numbersAndPunctuation
 
-    @State private var showingInfoAlert = false
+    @FocusState private var isPriceFocused: Bool
     
-
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             ZStack(alignment: .topLeading) {
                 HStack {
-                    TextField("", text: $price)
-                        .keyboardType(.decimalPad)
-                        .padding(.leading, 12)
-                        .padding(.vertical, 12)
-
                     Text(currency.isEmpty ? "€" : currency)
                         .font(.body)
-                        .padding(.trailing, 8)
+                        .padding(.leading, 12)
+                    
+                    TextField("", text: $price)
+                        .keyboardType(keyboard)
+                        .focused($isPriceFocused)
+                        .padding(.vertical, 12)
+                        .overlay(
+                            Group {
+                                if price.isEmpty {
+                                    Text("0.00")
+                                        .foregroundColor(Color.white.opacity(0.6))
+                                        .padding(.leading, 8)  // ← 8 points works perfectly
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                        )
+                    
+                    Spacer()
                 }
                 .frame(height: 48)
                 .frame(maxWidth: .infinity)
@@ -28,14 +40,16 @@ struct PriceField: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(edited ? Color.yellow : Color.gray, lineWidth: 2)
                 )
-                .onChange(of: price) {_, newValue in
-                    let normalized = newValue.replacingOccurrences(of: "\n", with: "")
-                                              .replacingOccurrences(of: ",", with: ".")
-                    price = normalized
-                    // now price uses dot and can be stored directly
+                .onChange(of: price) { _, newValue in
+                    let cleaned = newValue.replacingOccurrences(of: "\n", with: "")
+                                          .replacingOccurrences(of: ",", with: ".")
+                                          .replacingOccurrences(of: "€", with: "")
+                                          .replacingOccurrences(of: "$", with: "")
+                                          .replacingOccurrences(of: "£", with: "")
+                                          .trimmingCharacters(in: .whitespaces)
+                    price = cleaned
                     if !edited { edited = true }
                 }
-                .simplePlaceholder("0.00", when: price.isEmpty)
                 
                 Text(NSLocalizedString("PriceField.Title", comment: "Price label"))
                     .font(.caption).bold()
@@ -48,8 +62,6 @@ struct PriceField: View {
                     .offset(x: 12, y: -14)
                     .zIndex(1)
             }
-
-            // No extra explanatory text here per request; provide info button if desired
         }
     }
 }

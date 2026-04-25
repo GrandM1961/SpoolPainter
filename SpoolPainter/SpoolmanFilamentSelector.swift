@@ -5,13 +5,14 @@ import Combine
      @Binding var spoolmanIP: String
      @Binding var selectedFilamentID: Int?
      @Binding var isSelectedVisual: Bool
-
+     var disableAutoApply: Bool = false  // ← BEFORE onApply
      var onApply: (Filament) -> Void
 
      @State private var filaments: [Filament] = []
      @State private var loading = false
      @State private var errorMessage: String?
      @State private var cancellable: AnyCancellable?
+     
 
      var body: some View {
          Group {
@@ -97,11 +98,12 @@ import Combine
          .onChange(of: spoolmanIP) { _, _ in loadIfNeeded() }
      }
      private func selectFilament(_ f: Filament) {
-         // Not used when onApply is used; kept for completeness
-         selectedFilamentID = f.id
-         isSelectedVisual = true
-         onApply(f)
-     }
+             selectedFilamentID = f.id
+             isSelectedVisual = true
+             if !disableAutoApply {  // ← ONLY apply if not disabled
+                 onApply(f)
+             }
+         }
 
      private func loadIfNeeded() {
          errorMessage = nil

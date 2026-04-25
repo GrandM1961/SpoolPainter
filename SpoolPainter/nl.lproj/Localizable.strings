@@ -112,3 +112,10 @@
 "hold.near.tag.write" = "Houd je iPhone dicht bij de NFC-tag om gegevens te schrijven.";
 "write.start.waiting" = "Het schrijven is begonnen, in afwachting van de tag...";
 "write.succes" = "Schrijven succesvol";
+"type" = "Type";
+"variant" = "Variant";
+"color" = "Kleur";
+"spoolman.connect.tooltip" = "Verbinden met Spoolman-server om filament te selecteren";
+"spoolman.loading" = "Filamenten laden...";
+"choose.spoolman.filament" = "Kies filament van Spoolman";
+"selected.spoolman.filament" = "Filament geselecteerd";
